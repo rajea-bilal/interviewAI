@@ -20,7 +20,15 @@ type MessageType = {
   timestamp: number;
 };
 
-
+const behavioralQuestions = [
+  "Can you describe a challenging project you worked on and how you overcame obstacles?",
+  "Tell me about a time when you had to work with a difficult team member.",
+  "Describe a situation where you had to learn a new technology quickly.",
+  "How do you handle competing deadlines?",
+  "Tell me about a time you received constructive criticism.",
+  "Describe a project you're most proud of.",
+  // Add more behavioral questions...
+];
 
 const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => {
   // State to manage messages
@@ -54,6 +62,17 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
       audio.onended = () => setIsSpeaking(false);
     }
   }, [chatMessages]);
+
+  const generateNextQuestion = (previousAnswer: string) => {
+    // If answer is too short or unclear, ask for clarification
+    if (previousAnswer.split(' ').length < 20) {
+      return `Could you elaborate more on your previous answer?`;
+    }
+    
+    // Otherwise, move to a new question
+    const nextQuestion = behavioralQuestions[Math.floor(Math.random() * behavioralQuestions.length)];
+    return nextQuestion;
+  };
 
   const generateSubsequentQuestion = async (formData: FormData) => {
     setIsQuestionLoading(true);

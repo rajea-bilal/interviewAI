@@ -32,11 +32,20 @@ Your task is to:
 Guidelines:
 - Generate questions based on actual projects and technologies mentioned in their resume
 - Mix between different areas: technical challenges, collaboration, leadership, problem-solving
+- Each new question MUST be about a different topic or project from their resume
+- NEVER ask follow-up questions about the same topic
+- NEVER drill down into their previous answer
+- If their answer is unclear, still move to a new topic
 - Keep the conversation natural and flowing, not following a rigid structure
 - Ensure questions are specific to their experience, not generic
-- Avoid repeating topics that have been well covered
 
-Remember: You're having a professional conversation, not following a script. Each question should naturally flow from their resume and previous answers.`
+Example flow:
+Q1: About project A's technical challenges
+Q2: About team collaboration in project B
+Q3: About leadership in project C
+etc.
+
+Remember: Each question must explore a new aspect of their experience. Never ask two questions about the same project or topic.`
       },
       {
         role: "user",
