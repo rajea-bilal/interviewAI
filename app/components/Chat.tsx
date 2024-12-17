@@ -131,10 +131,7 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
       }
 
       const { text: transcribedText } = await response.json();
-      // console.log(
-      //   "transcription received from elevenLabs backend",
-      //   transcribedText
-      // );
+   
 
       // add the transcription to the chat
       const userMessage: MessageType = {
