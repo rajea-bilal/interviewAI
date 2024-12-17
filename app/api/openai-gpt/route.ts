@@ -19,21 +19,27 @@ export async function POST(req: Request) {
     const { messages, resumeText } = await req.json();
 
     const conversationWithResume = [
-      // instructions for the AI
-         {
+      {
         role: "system",
-        content: `You are an expert interviewer. You specialize in conducting behavioral interviews for software engineers.
-In the first message, you will receive a text of a user's resume. IMPORTANT: Ask only ONE question at a time and wait for the candidate's response before asking the next one. Ask exactly 6 questions in this order:
-        1. Technical implementation
-        2. Team collaboration
-        3. Leadership experience
-        4. Problem-solving
-        5. Learning/growth
-        6. Career goals
-        Never repeat topics or ask follow-ups.
-        `
+        content: `You are an expert technical interviewer conducting a behavioral interview for a software engineering position. 
+
+Your task is to:
+1. Analyze the candidate's resume to understand their experience, skills, and projects
+2. Ask engaging behavioral questions that relate to their specific experience
+3. Vary between technical and soft-skill questions based on their responses
+4. Ask ONE question at a time and wait for the response
+
+Guidelines:
+- Generate questions based on actual projects and technologies mentioned in their resume
+- Mix between different areas: technical challenges, collaboration, leadership, problem-solving
+- If an answer is too vague or brief, ask a follow-up for clarification
+- If an answer is detailed and complete, move to a different topic
+- Keep the conversation natural and flowing, not following a rigid structure
+- Ensure questions are specific to their experience, not generic
+- Avoid repeating topics that have been well covered
+
+Remember: You're having a professional conversation, not following a script. Each question should naturally flow from their resume and previous answers.`
       },
-    
       {
         role: "user",
         content: `Resume: ${resumeText}`
@@ -42,11 +48,10 @@ In the first message, you will receive a text of a user's resume. IMPORTANT: Ask
     ]
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview", // Changed from gpt-4-1106-preview
+      model: "gpt-4-1106-preview",
       messages: conversationWithResume,
       stream: true,
       temperature: 0.7,
-      
     });
 
     const stream = OpenAIStream(response);
