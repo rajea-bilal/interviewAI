@@ -1,0 +1,37 @@
+{
+  "name": "codebender-ai-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@google-cloud/speech": "^6.7.0",
+    "@types/formidable": "^3.4.5",
+    "@types/node": "20.5.1",
+    "@types/react": "18.2.20",
+    "@types/react-dom": "18.2.7",
+    "@vercel/analytics": "^1.2.2",
+    "ai": "^2.2.31",
+    "elevenlabs": "^0.18.1",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.4.19",
+    "formidable": "^3.5.1",
+    "fs": "^0.0.1-security",
+    "next": "^13.5.7",
+    "openai": "^4.24.2",
+    "pdfjs-dist": "^4.0.379",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-media-recorder": "^1.7.1",
+    "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16"
+  }
+}
