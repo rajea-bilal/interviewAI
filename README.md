@@ -45,10 +45,10 @@ cd interview-ai
 
 First, duplicate the `.env` file into a new file named `.env.local`. Update the value of your OpenAI API key there.
 
-env
+#### .env.local
 - OPENAI_API_KEY=your_openai_api_key
 - ELEVENLABS_API_KEY=your_elevenlabs_api_key
--GOOGLE_CLOUD_API_KEY=your_google_cloud_api_key
+- GOOGLE_CLOUD_API_KEY=your_google_cloud_api_key
 
 The first time you are running this project, you will need to install the dependencies. Run this command in your terminal:
 
