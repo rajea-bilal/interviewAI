@@ -22,6 +22,9 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ handleUserAudio }) => {
     <div className="">
       <ReactMediaRecorder
         audio
+        mediaRecorderOptions={{
+          mimeType: "audio/mp3",
+        }}
         onStart={() => setRecordingStatus("recording")}
         onStop={onStopRecording}
         render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
