@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           config: {
-            encoding: "ENCODING_UNSPECIFIED",
+            encoding: "MP3",
             sampleRateHertz: 48000,
             languageCode: "en-US",
               enableAutomaticPunctuation: true,  
