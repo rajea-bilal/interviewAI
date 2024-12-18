@@ -36,11 +36,12 @@ const ResumeUploader = () => {
         throw new Error("Network response was not ok");
       }
 
-      // console.log("response from resumeUploader", response);
-      // destructuring the object, extracting the text property and naming it 'extractedText'
-      const { text: extractedText, audio } = await response.json();
     
+      // destructuring the object, extracting the text property and naming it 'extractedText'
+      const { text: extractedText, audio, resumeText } = await response.json();
+      console.log("Extracted resume text:", resumeText); // Debug log
       setInitialText(extractedText);
+      setResumeText(extractedText);
       setAudio(audio);
       setShowChat(true);
     } catch (error) {

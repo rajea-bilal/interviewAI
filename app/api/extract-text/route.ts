@@ -36,7 +36,7 @@ async function fetchOpenAIResponse(
     messages: [
       {
         role: "user",
-        content: previousAnswers || "Start the interview"
+        content: "Generate a new behavioral interview question based on the resume"
       }
     ],
     resumeText: resumeText
@@ -138,7 +138,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
     // .getAll method returns all the values associated with the key "file"
     // .getAll method returns an array of file Objects, if theres only one file uploaded then we'll have just thta one file
     const [file] = formData.getAll("file") as unknown as File[];
-    const previousAnswers = formData.get("previousAnswers") as string | null;
+    const resumeText = formData.get("resumeText") as string;
+   
+      console.log("Resume text in extract-text route:", resumeText); // Debug log
 
     let openAIResponse;
     let elevenLabResponse;
@@ -179,7 +181,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       //  console.log("Extracted resume text:", resumeText)
 
       openAIResponse = await fetchOpenAIResponse(resumeText, null);
-      console.log("response from openAI, first question", openAIResponse);
+    
 
       if (openAIResponse) {
         // Send openAIResponse (text) to elevenLabs API to get the base64 audio
@@ -190,18 +192,19 @@ export async function POST(req: NextRequest, res: NextResponse) {
           status: "ok",
           text: openAIResponse,
           audio: elevenLabResponse,
+          resumeText: resumeText,
         }),
         { headers: { "Content-Type": "application/json" } }
       );
-    } else if (previousAnswers) {
-      // if user response is sent, generate follow up question
-      // console.log("Users previous response", previousAnswers);
-
-      openAIResponse = await fetchOpenAIResponse(null, previousAnswers);
-      // console.log(
-      //   "openAIResponse of a follow-up question received in extract-text",
-      //   openAIResponse
-      // );
+    } else {
+      
+    
+      const resumeText = formData.get("resumeText") as string;  // Get resumeText from formData
+      console.log("Resume text for next question:", resumeText);
+      // Get new question from OpenAI
+      openAIResponse = await fetchOpenAIResponse(resumeText, null);
+      // Get audio from ElevenLabs
+      elevenLabResponse = await fetchElevenLabsResponse(openAIResponse);
 
       return new Response(
         JSON.stringify({
@@ -215,9 +218,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
           },
         }
       );
-    } else {
-      return new Response("No file or text data found", { status: 400 });
-    }
+    } 
   } catch (err) {
     return new Response(
       JSON.stringify({ status: "error", error: String(err) }),

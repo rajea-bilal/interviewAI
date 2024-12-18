@@ -22,12 +22,8 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ handleUserAudio }) => {
     <div className="">
       <ReactMediaRecorder
         audio
-        mediaRecorderOptions={{
-          mimeType: 'audio/webm',  // More widely supported format
-          audioBitsPerSecond: 128000
-        }}
         onStart={() => setRecordingStatus("recording")}
-        onStop={(mediaBlobUrl) => onStopRecording(mediaBlobUrl)}
+        onStop={onStopRecording}
         render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
           <div>
             <p className="text-stone-700 ml-2 mt-2">Status: {status}</p>

@@ -50,6 +50,13 @@ First, duplicate the `.env` file into a new file named `.env.local`. Update the 
 - ELEVENLABS_API_KEY=your_elevenlabs_api_key
 - GOOGLE_CLOUD_API_KEY=your_google_cloud_api_key
 
+#### Port Configuration
+If port 3000 is in use:
+1. Start the app (it will use next available port)
+2. Update `.env.local`:
+   ```
+   NEXT_PUBLIC_API_URL=http://localhost:YOUR_PORT
+   ```
 The first time you are running this project, you will need to install the dependencies. Run this command in your terminal:
 
 ```bash

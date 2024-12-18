@@ -55,52 +55,7 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
     }
   }, [chatMessages]);
 
-  const generateSubsequentQuestion = async (formData: FormData) => {
-    setIsQuestionLoading(true);
-    // send it to the openAI and generate another question 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/extract-text`, {
-        method: "POST",
-        body: formData,
-      });
 
-      if (!response.body) {
-        throw new Error("Failed to generate follow-up question");
-      }
-
-      // Assuming the response is a simple text, read it directly
-      const responseData = await response.json();
-      const followUpQuestion = responseData.text; 
-
-        // Generate audio for the follow-up question
-    const audioResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/eleven-labs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text: followUpQuestion }),
-    });
-
-    const audioData = await audioResponse.json();
-
-      // Create a new assistant message with both text and audio
-    const newAssistantMessage: MessageType = {
-      role: "assistant",
-      text: followUpQuestion,
-      audio: audioData.audio ? URL.createObjectURL(base64ToBlob(audioData.audio, "audio/mpeg")) : null,
-      timestamp: Date.now(),
-    };
-
-      // console.log("Follow-up question generated:", newAssistantMessage);
-
-      // add the subsequent question to the Chat state
-      setChatMessages((prev) => [...prev, newAssistantMessage]);
-    } catch (error) {
-      console.error("Error generating follow-up question", error);
-    } finally {
-      setIsQuestionLoading(false);
-    }
-  };
 
   // handle user recording
   const handleUserAudio = async (mediaBlobUrl: string) => {
@@ -117,7 +72,7 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
       //blob added to a formData object to send it to the backend
       const formData = new FormData();
       formData.append("audio", audioBlob);
-      formData.append("resumeText", resumeText);
+     
       // request to elevenLabs STT API endpoint
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/google-cloud-stt`,
         {
@@ -132,7 +87,7 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
 
       const { text: transcribedText } = await response.json();
    
-
+    
       // add the transcription to the chat
       const userMessage: MessageType = {
         role: "user",
@@ -144,11 +99,30 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
       // add the user's transcribed message (audio converted to text) to the chatMessages state so it can be displayed
       setChatMessages((prev) => [...prev, userMessage]);
 
-      //extract-text endpoint expects formData
-      const formDataForText = new FormData();
-      formDataForText.append("previousAnswers", transcribedText);
-      formDataForText.append("resumeText", resumeText);
-      generateSubsequentQuestion(formDataForText);
+       console.log("Resume text in Chat component:", resumeText); // Debug l
+
+      // extract-text endpoint expects formData
+      // Get new question using ONLY resumeText
+      const formDataForQuestion = new FormData();
+      formDataForQuestion.append("resumeText", resumeText);
+
+       const aiResponse = await fetch("/api/extract-text", {
+      method: "POST",
+      body: formDataForQuestion,
+    });
+
+    const openAIResponse = await aiResponse.json();
+    // aiData contains both text (question) and audio from ElevenLabs
+    console.log("AI Response data:", openAIResponse);
+    // 4. Add AI's new question to chat with audio
+    const openAIMessage: MessageType = {
+      role: "assistant",
+      text: openAIResponse.text,
+      audio: openAIResponse.audio ? URL.createObjectURL(base64ToBlob(openAIResponse.audio, "audio/mpeg")) : null,
+      timestamp: Date.now(),
+    };
+    setChatMessages(prev => [...prev, openAIMessage]);
+     
     } catch (error) {
       console.error("Error transcribing audio", error);
       setChatMessages((prev) => [
@@ -165,16 +139,16 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
   };
 
   return (
-    <div className="max-w-2xl md: max-w-3xl flex flex-col w-full rounded-full mt-6 p-x-1">
+    <div className="max-w-2xl md:max-w-3xl flex flex-col w-full mt-6 p-x-1">
       {/* Chat Messages */}
-      <div className="bg-[rgba(0,0,0,0.1)] backdrop-blur-sm flex-1 w-full overflow-y-auto p-3 rounded-lg flex flex-col gap-2">
+      <div className="bg-[rgba(0,0,0,0.1)] backdrop-blur-sm  w-full overflow-y-auto p-3 rounded-lg flex flex-col gap-2 h-[400px]">
         {chatMessages.map((message, index) => (
           <div key={index} className={`flex`}>
             <div
               className={`rounded-lg ${
                 message.role === "user"
-                  ? " text-stone-50 text-sm"
-                  : " text-stone-700 text-sm"
+                  ? " text-stone-50 text-md"
+                  : " text-stone-700 text-md"
               }`}
             >
               <span className="font-bold">
@@ -192,7 +166,7 @@ const Chat: React.FC<ChatProps> = ({ initialText, audioBase64, resumeText }) => 
       </div>
 
       {/* Input Box */}
-      <div className="">
+      <div className="mt-4">
         <AudioRecorder handleUserAudio={handleUserAudio} />
       </div>
 
